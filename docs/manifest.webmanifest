@@ -1,0 +1,17 @@
+{
+  "name": "Chladni Plate Visualizer",
+  "short_name": "Chladni",
+  "description": "Interactive WebGPU cymatics lab for vibrating plates, resonant sand patterns, and audio-driven spatial modes.",
+  "start_url": "/chladni-plate-visualizer/",
+  "display": "standalone",
+  "background_color": "#111315",
+  "theme_color": "#111315",
+  "icons": [
+    {
+      "src": "/chladni-plate-visualizer/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
