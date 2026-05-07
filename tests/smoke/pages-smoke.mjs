@@ -1,9 +1,11 @@
 import { chromium } from '@playwright/test';
 import { createServer } from 'node:http';
-import { createReadStream, existsSync, statSync } from 'node:fs';
+import { createReadStream, existsSync, mkdirSync, statSync } from 'node:fs';
 import { extname, join, normalize, resolve } from 'node:path';
+import { PNG } from 'pngjs';
 
 const root = resolve('docs');
+const results = resolve('test-results');
 const base = '/chladni-plate-visualizer/';
 const port = 4183;
 const types = {
@@ -37,27 +39,68 @@ const server = createServer((req, res) => {
 });
 
 await new Promise((resolveListen) => server.listen(port, '127.0.0.1', resolveListen));
+mkdirSync(results, { recursive: true });
 
 const browser = await chromium.launch({ headless: true });
-const page = await browser.newPage({ viewport: { width: 1280, height: 820 } });
-const consoleErrors = [];
-page.on('console', (entry) => {
-  if (entry.type() === 'error') {
-    consoleErrors.push(entry.text());
-  }
-});
 
 try {
-  await page.goto(`http://127.0.0.1:${port}${base}`, { waitUntil: 'networkidle' });
-  await page.getByRole('heading', { name: /chladni plate/i }).waitFor();
-  await page.getByRole('button', { name: /start/i }).click();
-  await page.getByTestId('visualizer-canvas').waitFor();
-  await page.getByRole('spinbutton', { name: 'Frequency' }).fill('432');
-  await page.getByText(/v0\.1\.0/i).waitFor();
-  if (consoleErrors.length > 0) {
-    throw new Error(`Unexpected console errors:\n${consoleErrors.join('\n')}`);
-  }
+  await exerciseViewport({ width: 1280, height: 820 }, 'desktop');
+  await exerciseViewport({ width: 390, height: 844 }, 'mobile');
 } finally {
   await browser.close();
   server.close();
+}
+
+async function exerciseViewport(viewport, name) {
+  const page = await browser.newPage({ viewport });
+  const consoleErrors = [];
+  page.on('console', (entry) => {
+    if (entry.type() === 'error') {
+      consoleErrors.push(entry.text());
+    }
+  });
+
+  await page.goto(`http://127.0.0.1:${port}${base}`, { waitUntil: 'networkidle' });
+  await page.getByRole('heading', { name: /chladni plate/i }).waitFor();
+  await page.getByRole('button', { name: /start/i }).click();
+  const canvas = page.getByTestId('visualizer-canvas');
+  await canvas.waitFor();
+  await page.waitForTimeout(1200);
+  await page.getByRole('spinbutton', { name: 'Frequency' }).fill('432');
+  await page.getByText(/v0\.1\.0/i).waitFor();
+
+  const hasOverflow = await page.evaluate(
+    () => document.documentElement.scrollWidth > window.innerWidth + 2,
+  );
+  if (hasOverflow) {
+    throw new Error(`${name} viewport has horizontal overflow.`);
+  }
+
+  const screenshot = await canvas.screenshot({
+    path: join(results, `smoke-${name}.png`),
+  });
+  assertNonBlank(screenshot, name);
+
+  if (consoleErrors.length > 0) {
+    throw new Error(`Unexpected console errors in ${name}:\n${consoleErrors.join('\n')}`);
+  }
+  await page.close();
+}
+
+function assertNonBlank(buffer, name) {
+  const image = PNG.sync.read(buffer);
+  const colors = new Set();
+  let brightPixels = 0;
+  for (let offset = 0; offset < image.data.length; offset += 4 * 97) {
+    const r = image.data[offset];
+    const g = image.data[offset + 1];
+    const b = image.data[offset + 2];
+    colors.add(`${r}:${g}:${b}`);
+    if (r + g + b > 90) {
+      brightPixels += 1;
+    }
+  }
+  if (colors.size < 8 || brightPixels < 10) {
+    throw new Error(`${name} canvas screenshot appears blank.`);
+  }
 }
