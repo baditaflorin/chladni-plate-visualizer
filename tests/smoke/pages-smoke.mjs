@@ -13,7 +13,7 @@ const types = {
   '.json': 'application/json; charset=utf-8',
   '.map': 'application/json; charset=utf-8',
   '.svg': 'image/svg+xml',
-  '.webmanifest': 'application/manifest+json'
+  '.webmanifest': 'application/manifest+json',
 };
 
 function resolvePath(url) {
@@ -31,7 +31,7 @@ function resolvePath(url) {
 const server = createServer((req, res) => {
   const file = resolvePath(req.url);
   res.writeHead(existsSync(file) ? 200 : 404, {
-    'content-type': types[extname(file)] ?? 'application/octet-stream'
+    'content-type': types[extname(file)] ?? 'application/octet-stream',
   });
   createReadStream(file).pipe(res);
 });
@@ -52,7 +52,7 @@ try {
   await page.getByRole('heading', { name: /chladni plate/i }).waitFor();
   await page.getByRole('button', { name: /start/i }).click();
   await page.getByTestId('visualizer-canvas').waitFor();
-  await page.getByLabel(/frequency/i).fill('432');
+  await page.getByRole('spinbutton', { name: 'Frequency' }).fill('432');
   await page.getByText(/v0\.1\.0/i).waitFor();
   if (consoleErrors.length > 0) {
     throw new Error(`Unexpected console errors:\n${consoleErrors.join('\n')}`);

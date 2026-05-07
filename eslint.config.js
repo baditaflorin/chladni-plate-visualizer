@@ -5,7 +5,7 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['docs/assets/**', 'node_modules/**', 'coverage/**']
+    ignores: ['docs/assets/**', 'docs/sw.js', 'node_modules/**', 'coverage/**'],
   },
   js.configs.recommended,
   ...tseslint.configs.strict,
@@ -13,21 +13,36 @@ export default tseslint.config(
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
       ecmaVersion: 2022,
-      globals: globals.browser
+      globals: globals.browser,
     },
     plugins: {
-      'react-hooks': reactHooks
+      'react-hooks': reactHooks,
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
       '@typescript-eslint/no-magic-numbers': 'off',
-      '@typescript-eslint/no-confusing-void-expression': 'off'
-    }
+      '@typescript-eslint/no-confusing-void-expression': 'off',
+    },
   },
   {
     files: ['scripts/**/*.mjs', 'eslint.config.js'],
     languageOptions: {
-      globals: globals.node
-    }
-  }
+      globals: globals.node,
+    },
+  },
+  {
+    files: ['tests/**/*.mjs'],
+    languageOptions: {
+      globals: globals.node,
+    },
+  },
+  {
+    files: ['public/sw.js'],
+    languageOptions: {
+      globals: {
+        ...globals.serviceworker,
+        URL: 'readonly',
+      },
+    },
+  },
 );

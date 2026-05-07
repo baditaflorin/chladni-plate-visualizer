@@ -15,7 +15,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "types": ["vite/client", "vitest/globals"]
+    "types": ["vite/client", "vitest/globals", "@webgpu/types"]
   },
-  "include": ["src", "scripts", "tests", "vite.config.ts", "eslint.config.js"]
+  "include": ["src", "scripts", "tests", "vite.config.ts", "vitest.config.ts", "eslint.config.js"]
 }

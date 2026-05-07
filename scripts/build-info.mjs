@@ -22,14 +22,15 @@ const build = {
   commit,
   fullCommit,
   builtAt: new Date().toISOString(),
-  repositoryUrl: process.env.VITE_REPOSITORY_URL ?? 'https://github.com/baditaflorin/chladni-plate-visualizer',
+  repositoryUrl:
+    process.env.VITE_REPOSITORY_URL ?? 'https://github.com/baditaflorin/chladni-plate-visualizer',
   paypalUrl: process.env.VITE_PAYPAL_URL ?? 'https://www.paypal.com/paypalme/florinbadita',
-  pagesUrl: 'https://baditaflorin.github.io/chladni-plate-visualizer/'
+  pagesUrl: 'https://baditaflorin.github.io/chladni-plate-visualizer/',
 };
 
 mkdirSync(resolve(root, 'src/generated'), { recursive: true });
 writeFileSync(
   resolve(root, 'src/generated/build-info.ts'),
-  `export const buildInfo = ${JSON.stringify(build, null, 2)} as const;\n`
+  `export const buildInfo = ${JSON.stringify(build, null, 2)} as const;\n`,
 );
 writeFileSync(resolve(root, 'docs/version.json'), `${JSON.stringify(build, null, 2)}\n`);

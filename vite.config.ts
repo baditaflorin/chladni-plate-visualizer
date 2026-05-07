@@ -23,15 +23,8 @@ export default defineConfig({
             return 'react';
           }
           return undefined;
-        }
-      }
-    }
+        },
+      },
+    },
   },
-  test: {
-    environment: 'jsdom',
-    globals: true,
-    coverage: {
-      reporter: ['text', 'html']
-    }
-  }
 });

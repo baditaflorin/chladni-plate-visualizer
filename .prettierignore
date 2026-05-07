@@ -1,0 +1,12 @@
+node_modules/
+coverage/
+docs/assets/
+docs/index.html
+docs/404.html
+docs/sw.js
+docs/icon.svg
+docs/manifest.webmanifest
+docs/version.json
+src/generated/
+playwright-report/
+test-results/

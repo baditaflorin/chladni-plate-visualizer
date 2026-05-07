@@ -13,7 +13,7 @@ const types = {
   '.json': 'application/json; charset=utf-8',
   '.map': 'application/json; charset=utf-8',
   '.svg': 'image/svg+xml',
-  '.webmanifest': 'application/manifest+json'
+  '.webmanifest': 'application/manifest+json',
 };
 
 function resolvePath(url) {
