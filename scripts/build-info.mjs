@@ -14,14 +14,21 @@ function git(args, fallback) {
   }
 }
 
-const commit = git(['rev-parse', '--short=12', 'HEAD'], 'dev');
-const fullCommit = git(['rev-parse', 'HEAD'], 'dev');
+const fullCommit = git(
+  ['log', '--format=%H', '--invert-grep', '--grep', '^ops: publish pages build$', '-n', '1'],
+  git(['rev-parse', 'HEAD'], 'dev'),
+);
+const commit = fullCommit === 'dev' ? 'dev' : fullCommit.slice(0, 12);
+const builtAt =
+  fullCommit === 'dev'
+    ? new Date().toISOString()
+    : git(['show', '-s', '--format=%cI', fullCommit], new Date().toISOString());
 const build = {
   schemaVersion: 1,
   version: pkg.version,
   commit,
   fullCommit,
-  builtAt: new Date().toISOString(),
+  builtAt,
   repositoryUrl:
     process.env.VITE_REPOSITORY_URL ?? 'https://github.com/baditaflorin/chladni-plate-visualizer',
   paypalUrl: process.env.VITE_PAYPAL_URL ?? 'https://www.paypal.com/paypalme/florinbadita',

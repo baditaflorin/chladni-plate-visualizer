@@ -10,7 +10,7 @@ Mode A has no external dataset, but the page must surface version and commit met
 
 ## Decision
 
-Generate `docs/version.json` at build time with schema version `1`, package version, short commit, build timestamp, repository URL, PayPal URL, and Pages URL.
+Generate `docs/version.json` at build time with schema version `1`, package version, short source commit, source commit timestamp, repository URL, PayPal URL, and Pages URL.
 
 ## Consequences
 

@@ -6,7 +6,7 @@ The frontend ships only static assets and a generated `version.json` file contai
 
 - package version
 - source commit
-- build timestamp
+- source commit timestamp
 - repository URL
 - PayPal URL
 
