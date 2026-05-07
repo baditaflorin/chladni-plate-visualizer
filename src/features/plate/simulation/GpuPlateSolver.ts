@@ -74,7 +74,7 @@ fn main(@builtin(global_invocation_id) id: vec3<u32>) {
   let forcing = params.drive * params.gain * modal * sin(omega * params.time);
   let velocity = c - previous[index];
   next[index] = clamp(
-    2.0 * c - previous[index] + velocity * (1.0 - params.damping) -
+    2.0 * c - previous[index] - params.damping * velocity -
       params.stiffness * biharmonic + forcing,
     -1.0,
     1.0

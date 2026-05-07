@@ -61,8 +61,8 @@ export class CpuPlateSolver implements PlateSolver {
         const velocity = center - (this.previous[index] ?? 0);
         this.next[index] = clamp(
           2 * center -
-            (this.previous[index] ?? 0) +
-            velocity * (1 - settings.damping) -
+            (this.previous[index] ?? 0) -
+            settings.damping * velocity -
             settings.stiffness * biharmonic +
             forcing,
           -1,

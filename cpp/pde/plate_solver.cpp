@@ -64,8 +64,8 @@ void stepPlate(const std::vector<float>& current,
       const float fy = static_cast<float>(y) / static_cast<float>(p.height - 1);
       const float forcing = p.drive * modalShape(fx, fy, p) * std::sin(omega * p.time);
       const float velocity = c - previous[i];
-      next[i] = (2.0f * c - previous[i]) + velocity * (1.0f - p.damping) -
-                p.stiffness * biharmonic + forcing;
+      next[i] = (2.0f * c - previous[i]) - p.damping * velocity - p.stiffness * biharmonic +
+                forcing;
       next[i] = std::clamp(next[i], -1.0f, 1.0f);
     }
   }

@@ -65,7 +65,7 @@ export class ChladniScene {
     this.renderer.setClearColor(0x111315, 1);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-    this.camera.position.set(0, -3.35, 2.55);
+    this.camera.position.set(0, -4.15, 3.15);
     this.camera.lookAt(0, 0, 0);
     this.scene.background = new THREE.Color('#111315');
     this.scene.fog = new THREE.Fog('#111315', 4.5, 7.2);
@@ -118,7 +118,6 @@ export class ChladniScene {
       solver = await GpuPlateSolver.create(options.settings.gridSize);
     } catch {
       solver = new CpuPlateSolver(options.settings.gridSize);
-      options.onError('WebGPU is unavailable here, so the CPU solver is running.');
     }
     return new ChladniScene(options, solver);
   }
@@ -223,7 +222,7 @@ export class ChladniScene {
 
     for (let i = 0; i < positions.count; i += 1) {
       const value = this.frame[i] ?? 0;
-      positions.setZ(i, value * 0.46);
+      positions.setZ(i, value * 0.26);
       const amount = Math.min(Math.abs(value) * 8, 1);
       const color = neutral
         .clone()
@@ -253,7 +252,7 @@ export class ChladniScene {
       particle.vy = particle.vy * 0.84 - dy * 0.018 + (Math.random() - 0.5) * jitter;
       particle.x = THREE.MathUtils.clamp(particle.x + particle.vx, -1.55, 1.55);
       particle.y = THREE.MathUtils.clamp(particle.y + particle.vy, -1.55, 1.55);
-      const z = this.sample(gx, gy) * 0.46 + 0.025;
+      const z = this.sample(gx, gy) * 0.26 + 0.025;
       position.setXYZ(index, particle.x, particle.y, z);
       const quiet = 1 - Math.min(center * 12, 1);
       color.setXYZ(index, 0.62 + quiet * 0.38, 0.49 + quiet * 0.31, 0.25 + quiet * 0.2);
