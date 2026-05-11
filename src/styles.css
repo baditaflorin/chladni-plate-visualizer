@@ -277,11 +277,21 @@ input[type='range'] {
 }
 
 .button-row,
-.metric-row {
+.metric-row,
+.pattern-presets {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
+}
+
+.pattern-presets {
+  margin-top: 8px;
+}
+
+.pattern-presets .tool-button {
+  font-size: 12px;
+  padding: 6px 10px;
 }
 
 .metric-row {

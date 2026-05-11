@@ -17,7 +17,7 @@ import { buildInfo as generatedBuildInfo } from '../../generated/build-info';
 import { clearSettings, loadSettings, saveSettings } from '../../lib/storage';
 import { AudioEngine } from './audio/AudioEngine';
 import { frequencyToModes } from './math/chladni';
-import { defaultSettings, getMaterial, materials } from './presets';
+import { chladniPatterns, defaultSettings, getMaterial, materials } from './presets';
 import type { AudioBands, AudioMode, BuildInfo, PlateSettings, RuntimeStats } from './types';
 import type { ChladniScene } from './visualizer/ChladniScene';
 
@@ -267,6 +267,25 @@ export function PlateVisualizer({ buildInfo = generatedBuildInfo, onError }: Pro
               <button type="button" className="icon-button" onClick={snapMode} title="Snap mode">
                 <RefreshCcw size={17} aria-hidden="true" />
               </button>
+            </div>
+            <div className="pattern-presets" role="group" aria-label="Named Chladni patterns">
+              {chladniPatterns.map((pattern) => (
+                <button
+                  key={pattern.id}
+                  type="button"
+                  className="tool-button"
+                  title={pattern.description}
+                  onClick={() =>
+                    setPartial({
+                      modeX: pattern.modeX,
+                      modeY: pattern.modeY,
+                      frequency: pattern.frequency,
+                    })
+                  }
+                >
+                  {pattern.label}
+                </button>
+              ))}
             </div>
           </div>
 

@@ -54,12 +54,48 @@ export function normalizeBands(values: Uint8Array, sampleRate: number): AudioBan
   };
 }
 
+// Reference frequency at which the fundamental (1,1) mode resonates for our
+// default plate. Picked so the bundled audio presets — 256 Hz, 440 Hz, 880 Hz —
+// land on visually distinct modal patterns rather than all collapsing into
+// the same shape. A real plate's value depends on stiffness, density, and
+// dimensions; users tune it implicitly via the stiffness/material controls.
+export const FUNDAMENTAL_HZ = 128;
+
+// frequencyToModes used to return modeX = round(sqrt(freq/18)) and
+// modeY = round(modeX * 1.58) — a fixed-ratio mapping that produced the same
+// boring aspect mode shape at every frequency. Real Chladni plates resonate
+// at eigenfrequencies f_{m,n} that scale with (m² + n²) for a simply-
+// supported square plate. Instead of inventing a ratio, search the (m,n)
+// grid for the pair whose eigenfrequency is closest to the driver, breaking
+// ties toward lower mode order (more visible nodal lines).
 export function frequencyToModes(frequency: number) {
-  const scaled = clamp(Math.round(Math.sqrt(frequency / 18)), 1, 12);
-  return {
-    modeX: clamp(scaled, 1, 12),
-    modeY: clamp(Math.round(scaled * 1.58), 1, 12),
-  };
+  const safe = Math.max(1, frequency);
+  const ratio = safe / FUNDAMENTAL_HZ;
+  // (1,1) sits at sum = 2, so the squared-mode sum we want is 2 * ratio.
+  // Walk a bounded mode grid to find the (m,n) with the smallest residual.
+  let bestModeX = 1;
+  let bestModeY = 1;
+  let bestError = Number.POSITIVE_INFINITY;
+  for (let m = 1; m <= 12; m += 1) {
+    for (let n = m; n <= 12; n += 1) {
+      const eigenSum = m * m + n * n;
+      const eigenRatio = eigenSum / 2;
+      const error = Math.abs(eigenRatio - ratio);
+      if (error < bestError || (error === bestError && m + n < bestModeX + bestModeY)) {
+        bestError = error;
+        bestModeX = m;
+        bestModeY = n;
+      }
+    }
+  }
+  return { modeX: bestModeX, modeY: bestModeY };
+}
+
+// modeFrequency reports the eigenfrequency (Hz) of a given (m,n) mode under
+// the same calibration frequencyToModes uses. Useful for "snap to mode"
+// controls and for showing the resonant frequency next to the mode label.
+export function modeFrequency(modeX: number, modeY: number): number {
+  return FUNDAMENTAL_HZ * ((modeX * modeX + modeY * modeY) / 2);
 }
 
 export function rms(field: Float32Array) {
